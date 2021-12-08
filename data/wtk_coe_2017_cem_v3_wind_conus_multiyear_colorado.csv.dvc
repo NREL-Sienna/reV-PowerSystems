@@ -1,10 +1,9 @@
-md5: 33c20158d161b77173b95c2a5381846b
+md5: 363c732d682f8a98eca021d7f5502a84
 frozen: true
 deps:
-- path: tests/data/reV_sc/wtk_coe_2017_cem_v3_wind_conus_multiyear_colorado.csv
-  repo:
-    url: https://github.com/NREL/reVX
-    rev_lock: 65db16c841df1744b6d045cd9c13bb44fdb4f4b6
+- checksum: '"8f2da8a767d7d75994f860b0ff4ec4ce9c789b20b65d4b4ba34c189dfea8bebd"'
+  size: 3704336
+  path: https://github.com/NREL/reVX/raw/main/tests/data/reV_sc/wtk_coe_2017_cem_v3_wind_conus_multiyear_colorado.csv
 outs:
 - md5: 576de6bce7aa966fe4c70136ccb969a2
   size: 3704336

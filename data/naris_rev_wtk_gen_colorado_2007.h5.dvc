@@ -1,10 +1,9 @@
-md5: e8614ad01854de5c2856ab18be615e7c
+md5: 72e06b87e85869c259a47b342f6d8619
 frozen: true
 deps:
-- path: tests/data/reV_gen/naris_rev_wtk_gen_colorado_2007.h5
-  repo:
-    url: https://github.com/NREL/reVX
-    rev_lock: 65db16c841df1744b6d045cd9c13bb44fdb4f4b6
+- checksum: '"fa44175bd062250aa436affe8c961f445342b09de20b81733acd16c795b1b65e"'
+  size: 89884332
+  path: https://github.com/NREL/reVX/raw/main/tests/data/reV_gen/naris_rev_wtk_gen_colorado_2007.h5
 outs:
 - md5: 74333dd27b95c4e86c708522423e58fd
   size: 89884332
