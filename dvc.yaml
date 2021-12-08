@@ -1,0 +1,10 @@
+stages:
+  Run reVX with simple plant builder on SIIP:
+    cmd: python siip_simple_plant_builder.py
+    deps:
+    - data/naris_rev_wtk_gen_colorado_2007.h5
+    - data/siip_meta.csv
+    - data/wtk_coe_2017_cem_v3_wind_conus_multiyear_colorado.csv
+    - siip_simple_plant_builder.py
+    outs:
+    - data/siip_example_simple_plant_builder.h5

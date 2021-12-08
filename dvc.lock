@@ -1,0 +1,21 @@
+schema: '2.0'
+stages:
+  Run reVX with simple plant builder on SIIP:
+    cmd: python siip_simple_plant_builder.py
+    deps:
+    - path: data/naris_rev_wtk_gen_colorado_2007.h5
+      md5: 74333dd27b95c4e86c708522423e58fd
+      size: 89884332
+    - path: data/siip_meta.csv
+      md5: bd853fa07fd32faa6556b19b3d1adec2
+      size: 116
+    - path: data/wtk_coe_2017_cem_v3_wind_conus_multiyear_colorado.csv
+      md5: 576de6bce7aa966fe4c70136ccb969a2
+      size: 3704336
+    - path: siip_simple_plant_builder.py
+      md5: c3cfde6607ef88a7d0905d8b6894532d
+      size: 893
+    outs:
+    - path: data/siip_example_simple_plant_builder.h5
+      md5: 76752691438562dc9ab0b76c46d0ed3d
+      size: 344612
