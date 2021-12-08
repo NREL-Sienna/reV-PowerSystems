@@ -1,0 +1,4 @@
+outs:
+- md5: bd853fa07fd32faa6556b19b3d1adec2
+  size: 116
+  path: siip_meta.csv
