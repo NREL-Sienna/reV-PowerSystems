@@ -1,0 +1,11 @@
+md5: 33c20158d161b77173b95c2a5381846b
+frozen: true
+deps:
+- path: tests/data/reV_sc/wtk_coe_2017_cem_v3_wind_conus_multiyear_colorado.csv
+  repo:
+    url: https://github.com/NREL/reVX
+    rev_lock: 65db16c841df1744b6d045cd9c13bb44fdb4f4b6
+outs:
+- md5: 576de6bce7aa966fe4c70136ccb969a2
+  size: 3704336
+  path: wtk_coe_2017_cem_v3_wind_conus_multiyear_colorado.csv

@@ -15,3 +15,5 @@ _*.jl
 
 Manifest.toml
 *.h5
+*.csv
+/wtk_coe_2017_cem_v3_wind_conus_multiyear_colorado.csv
