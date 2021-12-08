@@ -8,3 +8,11 @@ stages:
     - siip_simple_plant_builder.py
     outs:
     - data/siip_example_simple_plant_builder.h5
+  Convert reVX output to timeseries pointer json:
+    cmd: python revx_output_siip.py
+    deps:
+    - data/siip_example_simple_plant_builder.h5
+    - revx_output_siip.py
+    outs:
+    - data/siip_timeseries.csv
+    - data/siip_timeseries_metadata.json

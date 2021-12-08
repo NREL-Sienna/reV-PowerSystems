@@ -19,3 +19,19 @@ stages:
     - path: data/siip_example_simple_plant_builder.h5
       md5: 76752691438562dc9ab0b76c46d0ed3d
       size: 344612
+  Convert reVX output to timeseries pointer json:
+    cmd: python revx_output_siip.py
+    deps:
+    - path: data/siip_example_simple_plant_builder.h5
+      md5: 76752691438562dc9ab0b76c46d0ed3d
+      size: 344612
+    - path: revx_output_siip.py
+      md5: a561ecc6f2dd779ab17422a06f9cd08e
+      size: 3910
+    outs:
+    - path: data/siip_timeseries.csv
+      md5: ec7788a6636ace26fcc4dc8a3301135e
+      size: 471061
+    - path: data/siip_timeseries_metadata.json
+      md5: 92a8e891ad145dd08a352b48b094321b
+      size: 849
