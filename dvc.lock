@@ -26,15 +26,15 @@ stages:
       md5: 76752691438562dc9ab0b76c46d0ed3d
       size: 344612
     - path: revx_output_siip.py
-      md5: 1f7a74c5aa146c5a69191bc0dd0f7f17
-      size: 3823
+      md5: a93518dfbb1f0e06f302089adb6bd712
+      size: 4704
     outs:
     - path: data/siip_timeseries.csv
       md5: 4675c319a3f31d49bf9b549c32d81926
       size: 418501
     - path: data/siip_timeseries_metadata.json
-      md5: 12f2fd033ea74a8d7708c004e72893e3
-      size: 747
+      md5: 7f86fba2d2ee4ccb6c55a593d1d8c857
+      size: 558
   Create powerSystems system:
     cmd: julia --project create_basic_sys.jl
     deps:
@@ -45,14 +45,14 @@ stages:
       md5: 4675c319a3f31d49bf9b549c32d81926
       size: 418501
     - path: data/siip_timeseries_metadata.json
-      md5: 12f2fd033ea74a8d7708c004e72893e3
-      size: 747
+      md5: 7f86fba2d2ee4ccb6c55a593d1d8c857
+      size: 558
     outs:
     - path: data/sys.json
-      md5: 140a70b87fd58a78f645839fb62ce2e6
+      md5: a18845a18f700f0d2782a3ead2c53b82
       size: 8173
     - path: data/sys_time_series_storage.h5
-      md5: 8bde1c39b20ca62d27db2228f27c45f4
+      md5: 9f0e6d0ebed88165786ad1f41c501602
       size: 191072
     - path: data/sys_validation_descriptors.json
       md5: d3068e5c3653d4fb15b52eb4771c46e4

@@ -2,27 +2,50 @@ from reVX.handlers.outputs import Outputs
 import pandas as pd
 import json
 import os
+import datetime
 
 
-def create_time_series_dataframe(outputs, name="component_name"):
-    """Create time series dataframe for all nodes in outputs
+def save_siip_time_series_csv(df, csv_filename):
+    """Save time series dataframe with correct date formatting
 
     Parameters
     ----------
-    outputs : reVX.handlers.output.Outputs
-        Output from reVX plant builder
-    name : str, default="component_name"
-        Column in reVX metadata to serve as column names
-
-    Returns
-    -------
-    pd.DataFrame
-        containing times as index, columns of `name`.
+    df : pd.DataFrame
+        Must contain datetime index
+    csv_filename : str
     """
-    return pd.DataFrame(outputs["plant_profiles", :, :],
-                 index=outputs["time_index"],
-                 columns=outputs["meta"][name])
+    df.to_csv(csv_filename,
+              index_label="DateTime",
+              date_format='%Y-%m-%dT%H:%M:%S')
 
+
+
+def save_all_lookahead(
+        lookaheads,
+        metadata_json_filename,
+        time_series_csv,
+        resolution=datetime.timedelta(hours=1)
+):
+    if len(lookaheads) == 0:
+        return
+    with Outputs(lookaheads[0], 'r') as output:
+        components = output["meta"]["component_name"]
+        metadata = create_initial_siip_metadata(output, resolution)
+
+    for index, component in enumerate(components):
+        timeseries = pd.DataFrame()
+        for count, lookahead_file in enumerate(lookaheads):
+            with Outputs(lookahead_file, "r") as output:
+                df = pd.DataFrame({count: output["plant_profiles", :, index]},
+                                  index=output["time_index"])
+                timeseries = timeseries.join(df)
+        csv_filename = component+time_series_csv
+        metadata.iloc["datafile", index] = csv_filename
+        save_siip_time_series_csv(timeseries, csv_filename)
+
+    json_metadata =  list(map(lambda row: row[1].to_dict(), metadata.iterrows()))
+    with open(metadata_json_filename, 'w') as f:
+        json.dump(json_metadata, f)
 
 def copy_with_default(source, target, column, default):
     "Copy column from source to target with a default."
@@ -32,7 +55,7 @@ def copy_with_default(source, target, column, default):
         target[column] = default
 
 
-def create_siip_metadata(outputs, csv_output):
+def create_initial_siip_metadata(outputs, resolution=None):
     """
     Create SIIP metadata from outputs
 
@@ -40,7 +63,7 @@ def create_siip_metadata(outputs, csv_output):
     ----------
     outputs : reVX.handlers.output.Outputs
         Output from reVX plant builder
-    csv_output : str
+    resolution : datetime.timedelta, optional
         Filepath to csv time series
 
     Returns
@@ -49,17 +72,15 @@ def create_siip_metadata(outputs, csv_output):
     """
     metadata = outputs["meta"]
     siip_metadata = metadata.loc[:, ["component_name"]]
-    time_delta = (outputs["time_index"][1] - outputs["time_index"][0]).total_seconds()
-    siip_metadata["resolution"] = time_delta
+    if resolution is None:
+        resolution = (outputs["time_index"][1] - outputs["time_index"][0]).total_seconds()
+    siip_metadata["resolution"] = resolution
     copy_with_default(metadata, siip_metadata, "normalization_factor", 1)
-    copy_with_default(metadata, siip_metadata, "module", "InfrastructureSystems")
-    copy_with_default(metadata, siip_metadata, "type", "SingleTimeSeries")
     copy_with_default(metadata, siip_metadata, "category", "Generator")
     copy_with_default(metadata, siip_metadata, "simulation", "")
     copy_with_default(metadata, siip_metadata, "name", "max_active_power")
 
-    siip_metadata["data_file"] = csv_output
-    return list(map(lambda row: row[1].to_dict(), siip_metadata.iterrows()))
+    return siip_metadata
 
 
 def validate_siip_columns(metadata):
@@ -92,18 +113,19 @@ def save_time_series_and_metadata(
     """
     if not validate_siip_columns(outputs["meta"]):
         raise RuntimeError("Missing SIIP columns in metadata")
-    df = create_time_series_dataframe(outputs, name)
-    df.to_csv(timeseries_csv_filename,
-              index_label="DateTime",
-              date_format='%Y-%m-%dT%H:%M:%S')
+    df = pd.DataFrame(outputs["plant_profiles", :, :],
+                      index=outputs["time_index"],
+                      columns=outputs["meta"][name])
 
-    siip_metadata = create_siip_metadata(
-            outputs,
-            os.path.relpath(timeseries_csv_filename,
-                os.path.dirname(metadata_json_filename))
-            )
+    siip_metadata = create_initial_siip_metadata(outputs)
+    siip_metadata["data_file"] = os.path.relpath(
+        timeseries_csv_filename,
+        os.path.dirname(metadata_json_filename)
+    )
+    save_siip_time_series_csv(df, timeseries_csv_filename)
+    json_metadata =  list(map(lambda row: row[1].to_dict(), siip_metadata.iterrows()))
     with open(metadata_json_filename, 'w') as f:
-        json.dump(siip_metadata, f)
+        json.dump(json_metadata, f)
 
 
 with Outputs("data/siip_example_simple_plant_builder.h5", "r") as f:
@@ -114,3 +136,7 @@ with Outputs("data/siip_example_simple_plant_builder.h5", "r") as f:
     )
 
 # We want to create a CSV where every component has it's own column
+
+lookahead = [
+    'data/siip_example_simple_plant_builder.h5',
+]
