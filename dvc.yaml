@@ -16,3 +16,13 @@ stages:
     outs:
     - data/siip_timeseries.csv
     - data/siip_timeseries_metadata.json
+  Create powerSystems system:
+    cmd: julia --project create_basic_sys.jl
+    deps:
+    - create_basic_sys.jl
+    - data/siip_timeseries.csv
+    - data/siip_timeseries_metadata.json
+    outs:
+    - data/sys.json
+    - data/sys_validation_descriptors.json
+    - data/sys_time_series_storage.h5

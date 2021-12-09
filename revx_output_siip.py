@@ -57,12 +57,6 @@ def create_siip_metadata(outputs, csv_output):
     copy_with_default(metadata, siip_metadata, "category", "Generator")
     copy_with_default(metadata, siip_metadata, "simulation", "")
     copy_with_default(metadata, siip_metadata, "name", "max_active_power")
-    copy_with_default(
-        metadata,
-        siip_metadata,
-        "scaling_factor_multiplier",
-        "1" # reV should already do this
-    )
 
     siip_metadata["data_file"] = csv_output
     return list(map(lambda row: row[1].to_dict(), siip_metadata.iterrows()))
@@ -99,7 +93,9 @@ def save_time_series_and_metadata(
     if not validate_siip_columns(outputs["meta"]):
         raise RuntimeError("Missing SIIP columns in metadata")
     df = create_time_series_dataframe(outputs, name)
-    df.to_csv(timeseries_csv_filename, index_label="DateTime")
+    df.to_csv(timeseries_csv_filename,
+              index_label="DateTime",
+              date_format='%Y-%m-%dT%H:%M:%S')
 
     siip_metadata = create_siip_metadata(
             outputs,
