@@ -21,6 +21,8 @@ rev_sc = rev_sc.rename({'gid': 'sc_gid',
 rev_sc['res_gids'] = rev_sc['res_gids'].apply(json.loads)
 
 out_fpath = 'data/siip_example_simple_plant_builder.h5'
+out_lookahead_fpath = 'data/siip_example_simple_plant_builder_lookahead.h5'
 
 if __name__=='__main__':
     SimplePlantBuilder.run(plant_meta, rev_sc, cf_fpath, out_fpath=out_fpath)
+    SimplePlantBuilder.run(plant_meta, rev_sc, cf_fpath, out_fpath=out_lookahead_fpath)

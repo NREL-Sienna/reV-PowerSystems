@@ -10,6 +10,6 @@ end
 
 # required_metadata
 
-metadata_file = "data/siip_timeseries_metadata.json"
+metadata_file = "data/siip_lookahead_metadata.json"
 add_time_series!(sys, metadata_file)
-to_json(sys, "basic_system/sys.json")
+to_json(sys, "lookahead_system/sys.json")

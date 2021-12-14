@@ -19,11 +19,10 @@ def save_siip_time_series_csv(df, csv_filename):
               date_format='%Y-%m-%dT%H:%M:%S')
 
 
-
 def save_all_lookahead(
         lookaheads,
-        metadata_json_filename,
         time_series_csv,
+        metadata_json_filename,
         resolution=datetime.timedelta(hours=1)
 ):
     if len(lookaheads) == 0:
@@ -31,21 +30,30 @@ def save_all_lookahead(
     with Outputs(lookaheads[0], 'r') as output:
         components = output["meta"]["component_name"]
         metadata = create_initial_siip_metadata(output, resolution)
+        time_index = output["time_index"]
 
+    data_files = []
     for index, component in enumerate(components):
-        timeseries = pd.DataFrame()
+        timeseries = pd.DataFrame(index=time_index)
         for count, lookahead_file in enumerate(lookaheads):
             with Outputs(lookahead_file, "r") as output:
                 df = pd.DataFrame({count: output["plant_profiles", :, index]},
                                   index=output["time_index"])
                 timeseries = timeseries.join(df)
-        csv_filename = component+time_series_csv
-        metadata.iloc["datafile", index] = csv_filename
+        csv_filename = time_series_csv.format(component)
+        data_files.append(os.path.relpath(
+            csv_filename,
+            os.path.dirname(metadata_json_filename)
+        ))
         save_siip_time_series_csv(timeseries, csv_filename)
+    metadata["data_file"] = data_files
+    metadata["module"] = "InfrastructureSystems"
+    metadata["type"] = "Deterministic"
 
     json_metadata =  list(map(lambda row: row[1].to_dict(), metadata.iterrows()))
     with open(metadata_json_filename, 'w') as f:
         json.dump(json_metadata, f)
+
 
 def copy_with_default(source, target, column, default):
     "Copy column from source to target with a default."
@@ -73,8 +81,8 @@ def create_initial_siip_metadata(outputs, resolution=None):
     metadata = outputs["meta"]
     siip_metadata = metadata.loc[:, ["component_name"]]
     if resolution is None:
-        resolution = (outputs["time_index"][1] - outputs["time_index"][0]).total_seconds()
-    siip_metadata["resolution"] = resolution
+        resolution = (outputs["time_index"][1] - outputs["time_index"][0])
+    siip_metadata["resolution"] = resolution.total_seconds()
     copy_with_default(metadata, siip_metadata, "normalization_factor", 1)
     copy_with_default(metadata, siip_metadata, "category", "Generator")
     copy_with_default(metadata, siip_metadata, "simulation", "")
@@ -126,17 +134,3 @@ def save_time_series_and_metadata(
     json_metadata =  list(map(lambda row: row[1].to_dict(), siip_metadata.iterrows()))
     with open(metadata_json_filename, 'w') as f:
         json.dump(json_metadata, f)
-
-
-with Outputs("data/siip_example_simple_plant_builder.h5", "r") as f:
-    save_time_series_and_metadata(
-        f,
-        'data/siip_timeseries.csv',
-        'data/siip_timeseries_metadata.json'
-    )
-
-# We want to create a CSV where every component has it's own column
-
-lookahead = [
-    'data/siip_example_simple_plant_builder.h5',
-]

@@ -1,3 +1,5 @@
 /siip_timeseries_metadata.json
 /sys.json
 /sys_validation_descriptors.json
+/lookahead_timeseries
+/siip_lookahead_metadata.json

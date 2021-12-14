@@ -8,21 +8,43 @@ stages:
     - siip_simple_plant_builder.py
     outs:
     - data/siip_example_simple_plant_builder.h5
+    - data/siip_example_simple_plant_builder_lookahead.h5
   Convert reVX output to timeseries pointer json:
-    cmd: python revx_output_siip.py
+    cmd: python test_no_lookahead.py
     deps:
     - data/siip_example_simple_plant_builder.h5
     - revx_output_siip.py
+    - test_no_lookahead.py
     outs:
     - data/siip_timeseries.csv
     - data/siip_timeseries_metadata.json
-  Create powerSystems system:
+  Convert lookahead reVX output to timeseries pointers json:
+    cmd: python test_lookahead.py
+    deps:
+    - data/siip_example_simple_plant_builder.h5
+    - data/siip_example_simple_plant_builder_lookahead.h5
+    - revx_output_siip.py
+    - test_lookahead.py
+    outs:
+    - data/lookahead_timeseries/
+    - data/siip_lookahead_metadata.json
+  Create powerSystems system without lookahead:
     cmd: julia --project create_basic_sys.jl
     deps:
     - create_basic_sys.jl
     - data/siip_timeseries.csv
     - data/siip_timeseries_metadata.json
     outs:
-    - data/sys.json
-    - data/sys_validation_descriptors.json
-    - data/sys_time_series_storage.h5
+    - basic_system/sys.json
+    - basic_system/sys_time_series_storage.h5
+    - basic_system/sys_validation_descriptors.json
+  Create powerSystems system with lookahead:
+    cmd: julia --project create_lookahead_sys.jl
+    deps:
+    - create_lookahead_sys.jl
+    - data/lookahead_timeseries/
+    - data/siip_lookahead_metadata.json
+    outs:
+    - lookahead_system/sys.json
+    - lookahead_system/sys_validation_descriptors.json
+    - lookahead_system/sys_time_series_storage.h5
