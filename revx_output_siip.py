@@ -3,9 +3,10 @@ import pandas as pd
 import json
 import os
 import datetime
+from typing import List, Union
 
 
-def save_siip_time_series_csv(df, csv_filename):
+def save_siip_time_series_csv(df: pd.DataFrame, csv_filename: str):
     """Save time series dataframe with correct date formatting
 
     Parameters
@@ -18,11 +19,22 @@ def save_siip_time_series_csv(df, csv_filename):
 
 
 def save_all_lookahead(
-    lookaheads,
-    time_series_csv,
-    metadata_json_filename,
-    resolution=datetime.timedelta(hours=1),
+    lookaheads: List[str],
+    time_series_csv: str,
+    timeseries_pointer_filename: str,
+    resolution: datetime.timedelta = datetime.timedelta(hours=1),
 ):
+    """Save all lookahead
+
+    Parameters
+    ----------
+    lookaheads : list of strings
+        List of paths to lookahead files
+    time_series_csv : string
+        String containing one {} for lookahead index formatting
+    metadata_json_filename : string
+        Path to save time series pointer file
+    """
     if len(lookaheads) == 0:
         return
     with Outputs(lookaheads[0], "r") as output:
@@ -42,7 +54,7 @@ def save_all_lookahead(
                 timeseries = timeseries.join(df)
         csv_filename = time_series_csv.format(component)
         data_files.append(
-            os.path.relpath(csv_filename, os.path.dirname(metadata_json_filename))
+            os.path.relpath(csv_filename, os.path.dirname(timeseries_pointer_filename))
         )
         save_siip_time_series_csv(timeseries, csv_filename)
     metadata["data_file"] = data_files
@@ -50,7 +62,7 @@ def save_all_lookahead(
     metadata["type"] = "Deterministic"
 
     json_metadata = list(map(lambda row: row[1].to_dict(), metadata.iterrows()))
-    with open(metadata_json_filename, "w") as f:
+    with open(timeseries_pointer_filename, "w") as f:
         json.dump(json_metadata, f)
 
 
@@ -62,7 +74,9 @@ def copy_with_default(source, target, column, default):
         target[column] = default
 
 
-def create_initial_siip_metadata(outputs, resolution=None):
+def create_initial_siip_metadata(
+    outputs: Outputs, resolution: Union[datetime.timedelta, None] = None
+):
     """
     Create SIIP metadata from outputs
 
@@ -102,7 +116,10 @@ def validate_siip_columns(metadata):
 
 
 def save_time_series_and_metadata(
-    outputs, timeseries_csv_filename, metadata_json_filename, name="component_name"
+    outputs: Outputs,
+    timeseries_csv_filename: str,
+    timeseries_pointer_filename: str,
+    name: str = "component_name",
 ):
     """Save time series to csv with columns of `name`
 
@@ -127,9 +144,9 @@ def save_time_series_and_metadata(
 
     siip_metadata = create_initial_siip_metadata(outputs)
     siip_metadata["data_file"] = os.path.relpath(
-        timeseries_csv_filename, os.path.dirname(metadata_json_filename)
+        timeseries_csv_filename, os.path.dirname(timeseries_pointer_filename)
     )
     save_siip_time_series_csv(df, timeseries_csv_filename)
     json_metadata = list(map(lambda row: row[1].to_dict(), siip_metadata.iterrows()))
-    with open(metadata_json_filename, "w") as f:
+    with open(timeseries_pointer_filename, "w") as f:
         json.dump(json_metadata, f)
