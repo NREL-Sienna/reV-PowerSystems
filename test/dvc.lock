@@ -13,8 +13,8 @@ stages:
       md5: 576de6bce7aa966fe4c70136ccb969a2
       size: 3704336
     - path: siip_simple_plant_builder.py
-      md5: 4955e71bf3674b8b35c228ce9714adf2
-      size: 1057
+      md5: 423cbecea204a3b03ba0f74c9bfb47e1
+      size: 979
     outs:
     - path: data/siip_example_simple_plant_builder.h5
       md5: 76752691438562dc9ab0b76c46d0ed3d
@@ -23,17 +23,17 @@ stages:
       md5: 76752691438562dc9ab0b76c46d0ed3d
       size: 344612
   Convert reVX output to timeseries pointer json:
-    cmd: python test_no_lookahead.py
+    cmd: PYTHONPATH=../revx_powersystems python test_no_lookahead.py
     deps:
+    - path: ../revx_powersystems/revx_output_siip.py
+      md5: 497a0878bad5919b4933a9aeaefa79d3
+      size: 5087
     - path: data/siip_example_simple_plant_builder.h5
       md5: 76752691438562dc9ab0b76c46d0ed3d
       size: 344612
-    - path: revx_output_siip.py
-      md5: 4189b9c1d82219bbb5baf761664cf5f1
-      size: 4654
     - path: test_no_lookahead.py
-      md5: 0478bbd18d65449c8c90e3f17a352769
-      size: 304
+      md5: cec399852137253e1f14d2da2957c846
+      size: 288
     outs:
     - path: data/siip_timeseries.csv
       md5: 4675c319a3f31d49bf9b549c32d81926
@@ -86,20 +86,20 @@ stages:
       md5: d3068e5c3653d4fb15b52eb4771c46e4
       size: 225179
   Convert lookahead reVX output to timeseries pointers json:
-    cmd: python test_lookahead.py
+    cmd: PYTHONPATH=../revx_powersystems python test_lookahead.py
     deps:
+    - path: ../revx_powersystems/revx_output_siip.py
+      md5: 497a0878bad5919b4933a9aeaefa79d3
+      size: 5087
     - path: data/siip_example_simple_plant_builder.h5
       md5: 76752691438562dc9ab0b76c46d0ed3d
       size: 344612
     - path: data/siip_example_simple_plant_builder_lookahead.h5
       md5: 76752691438562dc9ab0b76c46d0ed3d
       size: 344612
-    - path: revx_output_siip.py
-      md5: 4189b9c1d82219bbb5baf761664cf5f1
-      size: 4654
     - path: test_lookahead.py
-      md5: 53138e201d013a3416b0e398bf822aa0
-      size: 489
+      md5: 13ac4002a0177744bf66a98656bf4072
+      size: 490
     outs:
     - path: data/lookahead_timeseries/
       md5: 3a69c50a4b98578549835bb3a1cc7bcb.dir

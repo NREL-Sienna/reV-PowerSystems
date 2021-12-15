@@ -10,20 +10,20 @@ stages:
     - data/siip_example_simple_plant_builder.h5
     - data/siip_example_simple_plant_builder_lookahead.h5
   Convert reVX output to timeseries pointer json:
-    cmd: python test_no_lookahead.py
+    cmd: PYTHONPATH=../revx_powersystems python test_no_lookahead.py
     deps:
     - data/siip_example_simple_plant_builder.h5
-    - revx_output_siip.py
+    - ../revx_powersystems/revx_output_siip.py
     - test_no_lookahead.py
     outs:
     - data/siip_timeseries.csv
     - data/siip_timeseries_metadata.json
   Convert lookahead reVX output to timeseries pointers json:
-    cmd: python test_lookahead.py
+    cmd: PYTHONPATH=../revx_powersystems python test_lookahead.py
     deps:
     - data/siip_example_simple_plant_builder.h5
     - data/siip_example_simple_plant_builder_lookahead.h5
-    - revx_output_siip.py
+    - ../revx_powersystems/revx_output_siip.py
     - test_lookahead.py
     outs:
     - data/lookahead_timeseries/
