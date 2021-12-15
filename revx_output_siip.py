@@ -14,20 +14,18 @@ def save_siip_time_series_csv(df, csv_filename):
         Must contain datetime index
     csv_filename : str
     """
-    df.to_csv(csv_filename,
-              index_label="DateTime",
-              date_format='%Y-%m-%dT%H:%M:%S')
+    df.to_csv(csv_filename, index_label="DateTime", date_format="%Y-%m-%dT%H:%M:%S")
 
 
 def save_all_lookahead(
-        lookaheads,
-        time_series_csv,
-        metadata_json_filename,
-        resolution=datetime.timedelta(hours=1)
+    lookaheads,
+    time_series_csv,
+    metadata_json_filename,
+    resolution=datetime.timedelta(hours=1),
 ):
     if len(lookaheads) == 0:
         return
-    with Outputs(lookaheads[0], 'r') as output:
+    with Outputs(lookaheads[0], "r") as output:
         components = output["meta"]["component_name"]
         metadata = create_initial_siip_metadata(output, resolution)
         time_index = output["time_index"]
@@ -37,21 +35,22 @@ def save_all_lookahead(
         timeseries = pd.DataFrame(index=time_index)
         for count, lookahead_file in enumerate(lookaheads):
             with Outputs(lookahead_file, "r") as output:
-                df = pd.DataFrame({count: output["plant_profiles", :, index]},
-                                  index=output["time_index"])
+                df = pd.DataFrame(
+                    {count: output["plant_profiles", :, index]},
+                    index=output["time_index"],
+                )
                 timeseries = timeseries.join(df)
         csv_filename = time_series_csv.format(component)
-        data_files.append(os.path.relpath(
-            csv_filename,
-            os.path.dirname(metadata_json_filename)
-        ))
+        data_files.append(
+            os.path.relpath(csv_filename, os.path.dirname(metadata_json_filename))
+        )
         save_siip_time_series_csv(timeseries, csv_filename)
     metadata["data_file"] = data_files
     metadata["module"] = "InfrastructureSystems"
     metadata["type"] = "Deterministic"
 
-    json_metadata =  list(map(lambda row: row[1].to_dict(), metadata.iterrows()))
-    with open(metadata_json_filename, 'w') as f:
+    json_metadata = list(map(lambda row: row[1].to_dict(), metadata.iterrows()))
+    with open(metadata_json_filename, "w") as f:
         json.dump(json_metadata, f)
 
 
@@ -81,7 +80,7 @@ def create_initial_siip_metadata(outputs, resolution=None):
     metadata = outputs["meta"]
     siip_metadata = metadata.loc[:, ["component_name"]]
     if resolution is None:
-        resolution = (outputs["time_index"][1] - outputs["time_index"][0])
+        resolution = outputs["time_index"][1] - outputs["time_index"][0]
     siip_metadata["resolution"] = resolution.total_seconds()
     copy_with_default(metadata, siip_metadata, "normalization_factor", 1)
     copy_with_default(metadata, siip_metadata, "category", "Generator")
@@ -96,16 +95,15 @@ def validate_siip_columns(metadata):
     component_name = "component_name" in metadata
     series_module = "module" in metadata
     series_type = "type" in metadata
-    module_and_type = ((series_module and series_type) or
-                       (not series_module and not series_type))
+    module_and_type = (series_module and series_type) or (
+        not series_module and not series_type
+    )
     return component_name and module_and_type
 
 
 def save_time_series_and_metadata(
-        outputs,
-        timeseries_csv_filename,
-        metadata_json_filename,
-        name="component_name"):
+    outputs, timeseries_csv_filename, metadata_json_filename, name="component_name"
+):
     """Save time series to csv with columns of `name`
 
     Parameters
@@ -121,16 +119,17 @@ def save_time_series_and_metadata(
     """
     if not validate_siip_columns(outputs["meta"]):
         raise RuntimeError("Missing SIIP columns in metadata")
-    df = pd.DataFrame(outputs["plant_profiles", :, :],
-                      index=outputs["time_index"],
-                      columns=outputs["meta"][name])
+    df = pd.DataFrame(
+        outputs["plant_profiles", :, :],
+        index=outputs["time_index"],
+        columns=outputs["meta"][name],
+    )
 
     siip_metadata = create_initial_siip_metadata(outputs)
     siip_metadata["data_file"] = os.path.relpath(
-        timeseries_csv_filename,
-        os.path.dirname(metadata_json_filename)
+        timeseries_csv_filename, os.path.dirname(metadata_json_filename)
     )
     save_siip_time_series_csv(df, timeseries_csv_filename)
-    json_metadata =  list(map(lambda row: row[1].to_dict(), siip_metadata.iterrows()))
-    with open(metadata_json_filename, 'w') as f:
+    json_metadata = list(map(lambda row: row[1].to_dict(), siip_metadata.iterrows()))
+    with open(metadata_json_filename, "w") as f:
         json.dump(json_metadata, f)
