@@ -24,6 +24,9 @@ jobs:
       shell: bash -l {0}
       run: |
         conda env create -n revx -f environment.yml
+    - uses: julia-actions/setup-julia@latest
+      with:
+        version: "1" # get the latest Julia version
     - name: Load dvc
       uses: iterative/setup-dvc@v1
     - name: Load dvc data
