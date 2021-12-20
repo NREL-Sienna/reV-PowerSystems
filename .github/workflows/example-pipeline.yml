@@ -23,7 +23,7 @@ jobs:
     - name: Install conda dependencies
       shell: bash -l {0}
       run: |
-        conda env create -n revx -f environment.yml
+        conda env update --file environment.yml --name base
     - uses: julia-actions/setup-julia@latest
       with:
         version: "1" # get the latest Julia version
@@ -36,6 +36,5 @@ jobs:
     - name: Run dvc pipeline
       shell: bash -l {0}
       run: |
-        conda activate revx
         cd test
         dvc repro
