@@ -10,7 +10,7 @@ To get reV data into PowerSystems.jl, you'll need
 Assuming you have already instantiated the Julia package and loaded the `environment.yaml` into `conda`,
 we can load the data and run the pipeline using [`dvc`](https://github.com/iterative/dvc/):
 
-1. `dvc pull` to load in reV output data
+1. `dvc update test/data -R` to load in reV output data
 2. In the `test` directory, run `dvc repro`.
 
 ### Aggregating reV data with the right parameters.
