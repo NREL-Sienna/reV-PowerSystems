@@ -34,6 +34,10 @@ jobs:
       shell: bash -l {0}
       run: |
         dvc update test/data -R
+    - name: Instantiate Julia project
+      shell: bash -l {0}
+      run: |
+        julia --project -e 'import Pkg; Pkg.instantiate()'
     - name: Run dvc pipeline
       shell: bash -l {0}
       run: |
