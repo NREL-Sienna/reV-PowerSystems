@@ -26,7 +26,6 @@ jobs:
         conda install pandas numpy
         pip install NREL-reVX
     - uses: julia-actions/setup-julia@latest
-      shell: bash -l {0}
       with:
         version: "1" # get the latest Julia version
     - name: Load dvc
