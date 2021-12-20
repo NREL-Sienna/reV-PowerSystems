@@ -23,7 +23,7 @@ jobs:
     - name: Install conda dependencies
       run: |
         conda install pandas numpy
-        conda install -c nrel nrel-revx
+        pip install NREL-reVX
     - uses: julia-actions/setup-julia@latest
       with:
         version: "1" # get the latest Julia version
