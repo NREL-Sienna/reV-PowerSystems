@@ -9,9 +9,9 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: [3.8]
-        include:
-          - os: ubuntu-latest
-            python-version: 3.7
+        #include:
+          #- os: ubuntu-latest
+            #python-version: 3.7
 
     steps:
     - uses: actions/checkout@v2
@@ -23,7 +23,7 @@ jobs:
     - name: Install conda dependencies
       shell: bash -l {0}
       run: |
-        conda env update -n base --file environment.yaml
+        conda env create -n revx -f environment.yml
     - name: Load dvc
       uses: iterative/setup-dvc@v1
     - name: Load dvc data
@@ -33,5 +33,6 @@ jobs:
     - name: Run dvc pipeline
       shell: bash -l {0}
       run: |
+        conda activate revx
         cd test
         dvc repro
