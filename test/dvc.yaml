@@ -49,3 +49,4 @@ stages:
     - lookahead_system/sys.json
     - lookahead_system/sys_validation_descriptors.json
     - lookahead_system/sys_time_series_storage.h5
+    - lookahead_system/plant1_max_active_power.png

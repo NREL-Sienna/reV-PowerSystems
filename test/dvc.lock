@@ -115,8 +115,8 @@ stages:
     cmd: julia --project create_lookahead_sys.jl
     deps:
     - path: create_lookahead_sys.jl
-      md5: 20c6bc8383b69b824cc0c0b06c427713
-      size: 367
+      md5: 03e65489cb55780b8dc9dc5a6f9c15e7
+      size: 658
     - path: data/lookahead_timeseries/
       md5: 3a69c50a4b98578549835bb3a1cc7bcb.dir
       size: 1012181
@@ -125,12 +125,15 @@ stages:
       md5: 2188f40b9b4b08430062c4a131616246
       size: 822
     outs:
+    - path: lookahead_system/plant1_max_active_power.png
+      md5: e98d3c23d5b565958cc3907349f48373
+      size: 58986
     - path: lookahead_system/sys.json
-      md5: 570fae73743178b9d60dcdbcfe282e0f
-      size: 8642
+      md5: f68e413543151a3674868a39f88f861b
+      size: 11910
     - path: lookahead_system/sys_time_series_storage.h5
-      md5: 4e9bfd58048f7adf12036612cc24f5c2
+      md5: e1379478bf099d8a82eaa0789d7abf3b
       size: 352159
     - path: lookahead_system/sys_validation_descriptors.json
-      md5: d3068e5c3653d4fb15b52eb4771c46e4
-      size: 225179
+      md5: 407a17331fd34d53f3e08469dfdede42
+      size: 225883
