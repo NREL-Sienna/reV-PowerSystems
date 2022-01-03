@@ -38,6 +38,7 @@ stages:
     - basic_system/sys.json
     - basic_system/sys_time_series_storage.h5
     - basic_system/sys_validation_descriptors.json
+    - basic_system/plant1_max_active_power.png
   Create powerSystems system with lookahead:
     cmd: julia --project create_lookahead_sys.jl
     deps:

@@ -67,8 +67,8 @@ stages:
     cmd: julia --project create_basic_sys.jl
     deps:
     - path: create_basic_sys.jl
-      md5: 29b5a9c2248202b04903142ed26f8098
-      size: 364
+      md5: 20c76cbe9cbfe74ad64dc2fcf94a3c61
+      size: 589
     - path: data/siip_timeseries.csv
       md5: 4675c319a3f31d49bf9b549c32d81926
       size: 418501
@@ -76,15 +76,18 @@ stages:
       md5: 7f86fba2d2ee4ccb6c55a593d1d8c857
       size: 558
     outs:
+    - path: basic_system/plant1_max_active_power.png
+      md5: 2cdb694db7de553fc565266833af0f90
+      size: 43635
     - path: basic_system/sys.json
-      md5: 216f8c2acce65e7bb1d00f53ab3d10c6
-      size: 8172
+      md5: 63a7bee29514d2f0e61109400a53366e
+      size: 11440
     - path: basic_system/sys_time_series_storage.h5
-      md5: 8d872654bde11ff6479da7d03e7e91f1
+      md5: 66f1c8b8078ca1bb495d731da007c58c
       size: 191072
     - path: basic_system/sys_validation_descriptors.json
-      md5: d3068e5c3653d4fb15b52eb4771c46e4
-      size: 225179
+      md5: 407a17331fd34d53f3e08469dfdede42
+      size: 225883
   Convert lookahead reVX output to timeseries pointers json:
     cmd: PYTHONPATH=../rev_powersystems python test_lookahead.py
     deps:
