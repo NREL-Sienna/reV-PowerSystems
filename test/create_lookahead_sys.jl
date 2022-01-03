@@ -15,7 +15,7 @@ add_time_series!(sys, metadata_file)
 to_json(sys, "lookahead_system/sys.json", force=true)
 
 using Plots
-gr()
+pyplot()
 td = get_time_series(
     Deterministic,
     get_component(RenewableDispatch, sys, "plant1"),
