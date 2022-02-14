@@ -45,7 +45,7 @@ def max_fiber_size(
     max_size = 0
     for source_indices in preimage(index_array).values():
         max_size = max(max_size,
-                       size_function(source_points[source_indices]))
+                       size_function(source_points[source_indices,:]))
     return max_size
 
 
@@ -68,10 +68,11 @@ def match_points(source_metadata, target_metadata, max_size=5):
     """
     assert 'latitude' in source_metadata and 'longitude' in source_metadata
     assert 'latitude' in target_metadata and 'longitude' in target_metadata
-    source_points = source_metadata.loc[:, ['latitude', 'longitude']]
-    target_points = target_metadata.loc[:, ['latitude', 'longitude']]
-    _, index_array = scipy.spatial.kdtree(source_points).query(target_points)
-    assert max_size > max_fiber_size(source_points, index_array)
+    source_points = source_metadata.loc[:, ['latitude', 'longitude']].to_numpy()
+    target_points = target_metadata.loc[:, ['latitude', 'longitude']].to_numpy()
+    _, index_array = scipy.spatial.KDTree(target_points).query(source_points)
+    fiber_size = max_fiber_size(source_points, index_array)
+    assert max_size >= fiber_size, f"fiber's have size {fiber_size}"
     return index_array
 
 
