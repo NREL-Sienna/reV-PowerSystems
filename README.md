@@ -1,12 +1,19 @@
 # reV-PowerSystems
 
+[`reV`](https://github.com/NREL/reV) is an NREL tool to turn weather data and a set of
+locations and technologies into a more realistic map of generation profiles.
+
 To get reV data into PowerSystems.jl, you'll need
 - A `cf_fpath` (capacity factor) HDF5 file from the output of `reV-gen`
 - A `rev_sc` (reV supply curve) csv from the output of `reV.supply_curve`.
 This must have the columns `sc_gid`, `latitude`, `longitude`, `res_gids`, `gid_counts`, `mean_cf`.
 - A csv file containing `latitude`, `longitude`, `capacity` (in MW), and `component_name` (referencing your component in SIIP).
 
-## Example Pipeline
+## reV Pipeline
+
+![reV example pipeline going from weather data, tech config, supply curve, and locations](typical-rev-process.png)
+ 
+## Our Pipeline (+ reVX aggregation)
 
 Assuming you have already instantiated the Julia package and loaded the `environment.yaml` into `conda`,
 we can load the data and run the pipeline using [`dvc`](https://github.com/iterative/dvc/):
