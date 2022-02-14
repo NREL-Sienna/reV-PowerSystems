@@ -1,152 +1,310 @@
 from reVX.handlers.outputs import Outputs
+import scipy.spatial
 import pandas as pd
+import numpy as np
 import json
 import os
 import datetime
 from typing import List, Union
+from collections import defaultdict
 
 
-def save_siip_time_series_csv(df: pd.DataFrame, csv_filename: str):
-    """Save time series dataframe with correct date formatting
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Must contain datetime index
-    csv_filename : str
-    """
-    df.to_csv(csv_filename, index_label="DateTime", date_format="%Y-%m-%dT%H:%M:%S")
+def nrows(array):
+    return array.shape[0]
 
 
-def save_all_lookahead(
-    lookaheads: List[str],
-    time_series_csv: str,
-    timeseries_pointer_filename: str,
-    resolution: datetime.timedelta = datetime.timedelta(hours=1),
+def preimage(array):
+    finverse = defaultdict(list)
+    for i, v in enumerate(array):
+        finverse[v].append(i)
+    return finverse
+
+
+def max_fiber_size(
+        source_points,
+        index_array,
+        size_function=nrows
 ):
-    """Save all lookahead
+    """This function computes how far apart points are that
+    map to the same thing.
+
+    Formally, given a collection of points $X$ and a mapping $f : X -> Y$,
+    compute $\mathrm{max}(\{\mathrm{size}(f^{-1}(y)) : y \in Y\})$.
+    In other words, we compute the max size of each fiber.
 
     Parameters
     ----------
-    lookaheads : list of strings
-        List of paths to lookahead files
-    time_series_csv : string
-        String containing one {} for lookahead index formatting
-    metadata_json_filename : string
-        Path to save time series pointer file
-    """
-    if len(lookaheads) == 0:
-        return
-    with Outputs(lookaheads[0], "r") as output:
-        components = output["meta"]["component_name"]
-        metadata = create_initial_siip_metadata(output, resolution)
-        time_index = output["time_index"]
-
-    data_files = []
-    for index, component in enumerate(components):
-        timeseries = pd.DataFrame(index=time_index)
-        for count, lookahead_file in enumerate(lookaheads):
-            with Outputs(lookahead_file, "r") as output:
-                df = pd.DataFrame(
-                    {count: output["plant_profiles", :, index]},
-                    index=output["time_index"],
-                )
-                timeseries = timeseries.join(df)
-        csv_filename = time_series_csv.format(component)
-        data_files.append(
-            os.path.relpath(csv_filename, os.path.dirname(timeseries_pointer_filename))
-        )
-        save_siip_time_series_csv(timeseries, csv_filename)
-    metadata["data_file"] = data_files
-    metadata["module"] = "InfrastructureSystems"
-    metadata["type"] = "Deterministic"
-
-    json_metadata = list(map(lambda row: row[1].to_dict(), metadata.iterrows()))
-    with open(timeseries_pointer_filename, "w") as f:
-        json.dump(json_metadata, f)
-
-
-def copy_with_default(source, target, column, default):
-    "Copy column from source to target with a default."
-    if column in source:
-        target[column] = source[column]
-    else:
-        target[column] = default
-
-
-def create_initial_siip_metadata(
-    outputs: Outputs, resolution: Union[datetime.timedelta, None] = None
-):
-    """
-    Create SIIP metadata from outputs
-
-    Parameters
-    ----------
-    outputs : reVX.handlers.output.Outputs
-        Output from reVX plant builder
-    resolution : datetime.timedelta, optional
-        Filepath to csv time series
+    source_points : array_like dimensions (m, n)
+    index_array : array_like of int (k,)
+    size_function : nonnegative function taking array and returning the size
 
     Returns
     -------
-    List of dictionaries containing SIIP metadata
+    max_size
     """
-    metadata = outputs["meta"]
-    siip_metadata = metadata.loc[:, ["component_name"]]
-    if resolution is None:
-        resolution = outputs["time_index"][1] - outputs["time_index"][0]
-    siip_metadata["resolution"] = resolution.total_seconds()
-    copy_with_default(metadata, siip_metadata, "normalization_factor", 1)
-    copy_with_default(metadata, siip_metadata, "category", "Generator")
-    copy_with_default(metadata, siip_metadata, "simulation", "")
-    copy_with_default(metadata, siip_metadata, "name", "max_active_power")
-
-    return siip_metadata
+    max_size = 0
+    for source_indices in preimage(index_array).values():
+        max_size = max(max_size,
+                       size_function(source_points[source_indices]))
+    return max_size
 
 
-def validate_siip_columns(metadata):
-    "Validate metadata coming from reVX output"
-    component_name = "component_name" in metadata
-    series_module = "module" in metadata
-    series_type = "type" in metadata
-    module_and_type = (series_module and series_type) or (
-        not series_module and not series_type
-    )
-    return component_name and module_and_type
-
-
-def save_time_series_and_metadata(
-    outputs: Outputs,
-    timeseries_csv_filename: str,
-    timeseries_pointer_filename: str,
-    name: str = "component_name",
-):
-    """Save time series to csv with columns of `name`
+def match_points(source_metadata, target_metadata, max_size=np.inf):
+    """Match source to target
+    For each source_point, we find the index of the nearest target point.
 
     Parameters
     ----------
-    outputs : reVX.handlers.output.Outputs
-        Output from reVX plant builder
-    timeseries_csv_filename : str
-        Filename to save output time series to
-    metadata_json_filename : str
-        Filename to save SIIP metadata to
-    name : str, default="name"
-        Column in reVX metadata to serve as column names
-    """
-    if not validate_siip_columns(outputs["meta"]):
-        raise RuntimeError("Missing SIIP columns in metadata")
-    df = pd.DataFrame(
-        outputs["plant_profiles", :, :],
-        index=outputs["time_index"],
-        columns=outputs["meta"][name],
-    )
+    source_metadata : pd.DataFrame
+        Array containing lattitude and longitude
+    target_metadata : pd.DataFrame
+        Array containing lattitude and longitude
+    max_size: float = inf
+        Maximum size of each "fiber"
 
-    siip_metadata = create_initial_siip_metadata(outputs)
-    siip_metadata["data_file"] = os.path.relpath(
-        timeseries_csv_filename, os.path.dirname(timeseries_pointer_filename)
+    Returns
+    -------
+    index_array : array of integers
+    """
+    assert 'latitude' in source_metadata and 'longitude' in source_metadata
+    assert 'latitude' in target_metadata and 'longitude' in target_metadata
+    source_points = source_metadata.loc[:, ['latitude', 'longitude']]
+    target_points = target_metadata.loc[:, ['latitude', 'longitude']]
+    _, index_array = scipy.spatial.kdtree(source_points).query(target_points)
+    assert max_size > max_fiber_size(source_points, index_array)
+    return index_array
+
+
+class SIIPTimeSeriesMetadata:
+    """Class for constructing SIIP Time Series from reV
+
+    Examples
+    --------
+    > (
+        SIIPTimeSeries
+        .from_rev(outputs)
+        .add_rev_timeseries(outputs, "timeseries.csv")
+        .export_json(path)
     )
-    save_siip_time_series_csv(df, timeseries_csv_filename)
-    json_metadata = list(map(lambda row: row[1].to_dict(), siip_metadata.iterrows()))
-    with open(timeseries_pointer_filename, "w") as f:
-        json.dump(json_metadata, f)
+    """
+    def __init__(self, metadata=None):
+        if metadata is None:
+            self.siip_metadata = pd.DataFrame()
+        else:
+            self.siip_metadata = metadata.copy()
+            (
+                self
+                .add_from(metadata, "normalization_factor", 1)
+                .add_from(metadata, "category", "Generator")
+                .add_from(metadata, "simulation", "")
+                .add_from(metadata, "name", "max_active_power")
+            )
+
+    def add_from(self, source, column, default=None):
+        "Copy column from source if metadata does not have column"
+        if column not in self.siip_metadata:
+            self.set_from(source, column, default)
+        return self
+
+    def set_from(self, source, column, default=None):
+        "Copy column from source to metadata with a default."
+        if column in source:
+            self.siip_metadata[column] = source[column]
+        elif default is not None:
+            self.siip_metadata[column] = default
+        return self
+
+    def add(self, column, value):
+        "Adds value at column only if metadata does not have column"
+        if column not in self.siip_metadata:
+            self.set(column, value)
+        return self
+
+    def set(self, column, value):
+        self.siip_metadata[column] = value
+        return self
+
+    def remap(new_data, match_function=match_points, **kwargs):
+        """Use subset of time series metadata using new_data and match_function
+
+        Parameters
+        ----------
+        new_data : pd.DataFrame
+        match_function : function = match_points
+            Takes new data and existing data and creates an array pointing to existing data
+        **kwargs
+            kwargs are passed to match_function
+
+        Returns
+        -------
+        Metadata with component frames from the index of new_data
+        and values given by the map_function
+        """
+        indices = match_function(new_data, self.siip_metadata, **kwargs)
+        return remap_indices(indices, new_data.index)
+
+    def remap_indices(indices, names):
+        self.siip_metadata = self.siip_metadata.iloc[indices, :]
+        self.siip_metadata.index = names
+        return self
+
+    @classmethod
+    def from_csv(cls, filename, id_column: str = "component_name"):
+        metadata = pd.read_csv(filename).set_index(id_column)
+        return cls(metadata)
+
+    @classmethod
+    def from_rev(cls, outputs: Union[str, Outputs],
+                 id_column="component_name"):
+        """Create initial SIIP metadata from reV output
+
+        Parameters
+        ----------
+        outputs: Outputs or filename to Outputs
+        id_names = "component_name"
+            Column(s) of id names to use. Can be None.
+
+        Returns
+        -------
+        SIIPTimeSeries
+        """
+        if isinstance(outputs, str):
+            with Outputs(outputs, "r") as real_output:
+                return cls.from_rev(real_output, id_column)
+        metadata = outputs["meta"].copy()
+        if id_column in metadata:
+            metadata = metadata.set_index(id_column)
+        siip = cls(metadata)
+        resolution = outputs["time_index"][1] - outputs["time_index"][0]
+        return (
+            siip
+            .set_resolution(resolution)
+        )
+
+    def set_resolution(self, resolution: datetime.timedelta):
+        self.set("resolution", resolution.total_seconds())
+        return self
+
+    def add_rev_lookaheads(
+            self,
+        lookaheads: List[str],
+        time_series_csv: str,
+    ):
+        """Set forecast by unwrapping each lookahead
+        into "looking ahead" by `resolution` each time.
+
+        Parameters
+        ----------
+        lookaheads : List[str]
+            List of paths to lookahead files
+        time_series_csv : str
+            String containing one {} for lookahead index formatting
+        resolution : datetime.timdelta = 1 hour
+            How far ahead each lookahead looks
+        """
+        if len(lookaheads) == 0:
+            return
+        with Outputs(lookaheads[0], "r") as output:
+            time_index = output["time_index"]
+
+        data_files = []
+        # For each component, we'll add the lookaheads to the time series
+        for index, component in enumerate(self.siip_metadata.index):
+            timeseries = pd.DataFrame(index=time_index)
+            for count, lookahead_file in enumerate(lookaheads):
+                with Outputs(lookahead_file, "r") as output:
+                    df = pd.DataFrame(
+                        {count: output["plant_profiles", :, index]},
+                        index=output["time_index"],
+                    )
+                    timeseries = timeseries.join(df)
+            csv_filename = time_series_csv.format(component)
+            data_files.append(csv_filename)
+            self.save_csv(timeseries, csv_filename)
+        self.set("data_file", data_files)
+        self.add("module", "InfrastructureSystems")
+        self.add("type", "Deterministic")
+        return self
+
+    def add_rev_timeseries(
+            self,
+            outputs: Outputs,
+            timeseries_csv_filename: str,
+            name: str = "plant_profiles"
+    ):
+        """Save time series to csv with columns of initial ids.
+
+        Parameters
+        ----------
+        outputs : reVX.handlers.output.Outputs
+            Output from reVX plant builder
+        timeseries_csv_filename : str
+            Filename to save output time series to
+        name: str = "plant_profiles"
+            Dataset in output to read profiles from. May be "gen_profiles".
+        """
+        values = outputs[name,:,:]
+        df = pd.DataFrame(
+            values,
+            index=outputs["time_index"],
+            columns=self.siip_metadata.index
+        )
+        self.set("data_file", timeseries_csv_filename)
+        self.save_csv(df, timeseries_csv_filename)
+        return self
+
+    REQUIRED_COLUMNS=["resolution","normalization_factor","category","simulation","name","data_file"]
+    OPTIONAL_COLUMNS=["module","type"]
+    COLUMNS=REQUIRED_COLUMNS+OPTIONAL_COLUMNS
+
+    def necessary_columns(self):
+        columns = list(filter(lambda c: c in self.COLUMNS,
+                              self.siip_metadata.columns))
+        siip_data = self.siip_metadata.loc[:, columns].copy()
+        siip_data["component_name"] = siip_data.index
+        return siip_data
+
+    def export_json(self, metadata_path):
+        """Save json metadata to metadata_path"""
+        self.validate_siip_columns()
+
+        siip_data = self.necessary_columns()
+        siip_data["data_file"] = siip_data["data_file"].map(
+            lambda timeseries_csv: os.path.relpath(
+                timeseries_csv, os.path.dirname(metadata_path)
+            )
+        )
+        json_metadata = list(map(
+            lambda row: row[1].to_dict(),
+            siip_data.iterrows()
+        ))
+
+        with open(metadata_path, "w") as f:
+            json.dump(json_metadata, f)
+
+    @classmethod
+    def save_csv(cls, df, csv_filename: str):
+        """Save time series dataframe with correct date formatting
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            Must contain datetime index
+        csv_filename : str
+        """
+        df.to_csv(csv_filename, index_label="DateTime", date_format="%Y-%m-%dT%H:%M:%S")
+
+    def validate_siip_columns(self):
+        "Validate metadata coming from reVX output"
+        for c in self.REQUIRED_COLUMNS:
+            assert c in self.siip_metadata, f"Missing column {c}"
+        series_module = "module" in self.siip_metadata
+        series_type = "type" in self.siip_metadata
+        assert (series_module and series_type) or (
+            not series_module and not series_type
+        ), "Only module or type in metadata"
+
+
+def concat(metadatas: List[SIIPTimeSeriesMetadata], **kwargs):
+    "Concatenate SIIPTimeSeriesMetadata. Useful for adding multiple resolutions"
+    return SIIPTimeSeriesMetadata(pd.concat(metadatas, **kwargs))

@@ -1,4 +1,4 @@
-from revx_output_siip import save_all_lookahead
+from rev_powersystems import SIIPTimeSeriesMetadata
 import os
 
 lookaheads = [
@@ -12,4 +12,9 @@ directory = "data/lookahead_timeseries/"
 if not os.path.exists(directory):
     os.makedirs(directory)
 
-save_all_lookahead(lookaheads, time_series_csv, metadata_json_filename)
+(
+    SIIPTimeSeriesMetadata
+    .from_rev(lookaheads[0])
+    .add_rev_lookaheads(lookaheads, time_series_csv)
+    .export_json(metadata_json_filename)
+)

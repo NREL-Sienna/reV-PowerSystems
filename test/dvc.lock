@@ -23,23 +23,23 @@ stages:
       md5: 76752691438562dc9ab0b76c46d0ed3d
       size: 344612
   Convert reVX output to timeseries pointer json:
-    cmd: PYTHONPATH=../rev_powersystems python test_no_lookahead.py
+    cmd: python test_no_lookahead.py
     deps:
     - path: ../rev_powersystems/revx_output_siip.py
-      md5: 497a0878bad5919b4933a9aeaefa79d3
-      size: 5087
+      md5: 2b48eb4e3e1b73f042202e7c172e6e77
+      size: 10401
     - path: data/siip_example_simple_plant_builder.h5
       md5: 76752691438562dc9ab0b76c46d0ed3d
       size: 344612
     - path: test_no_lookahead.py
-      md5: cec399852137253e1f14d2da2957c846
-      size: 288
+      md5: 8071954bc0ade52467d2b95b24485014
+      size: 346
     outs:
     - path: data/siip_timeseries.csv
       md5: 4675c319a3f31d49bf9b549c32d81926
       size: 418501
     - path: data/siip_timeseries_metadata.json
-      md5: 7f86fba2d2ee4ccb6c55a593d1d8c857
+      md5: 08eaca967ac14bfdacd7dee02ebf9800
       size: 558
   Create powerSystems system:
     cmd: julia --project create_basic_sys.jl
@@ -73,27 +73,27 @@ stages:
       md5: 4675c319a3f31d49bf9b549c32d81926
       size: 418501
     - path: data/siip_timeseries_metadata.json
-      md5: 7f86fba2d2ee4ccb6c55a593d1d8c857
+      md5: 08eaca967ac14bfdacd7dee02ebf9800
       size: 558
     outs:
     - path: basic_system/plant1_max_active_power.png
       md5: 2cdb694db7de553fc565266833af0f90
       size: 43635
     - path: basic_system/sys.json
-      md5: 63a7bee29514d2f0e61109400a53366e
+      md5: ce1547b5ea6eb49f0cc520b5e2a916ec
       size: 11440
     - path: basic_system/sys_time_series_storage.h5
-      md5: 66f1c8b8078ca1bb495d731da007c58c
+      md5: b761d2c3f2bdf1805a8d2ff41b262c3a
       size: 191072
     - path: basic_system/sys_validation_descriptors.json
       md5: 407a17331fd34d53f3e08469dfdede42
       size: 225883
   Convert lookahead reVX output to timeseries pointers json:
-    cmd: PYTHONPATH=../rev_powersystems python test_lookahead.py
+    cmd: python test_lookahead.py
     deps:
     - path: ../rev_powersystems/revx_output_siip.py
-      md5: 497a0878bad5919b4933a9aeaefa79d3
-      size: 5087
+      md5: 2b48eb4e3e1b73f042202e7c172e6e77
+      size: 10401
     - path: data/siip_example_simple_plant_builder.h5
       md5: 76752691438562dc9ab0b76c46d0ed3d
       size: 344612
@@ -101,15 +101,15 @@ stages:
       md5: 76752691438562dc9ab0b76c46d0ed3d
       size: 344612
     - path: test_lookahead.py
-      md5: 13ac4002a0177744bf66a98656bf4072
-      size: 490
+      md5: 18e502efed7b95470273d895de4ab4ae
+      size: 576
     outs:
     - path: data/lookahead_timeseries/
       md5: 3a69c50a4b98578549835bb3a1cc7bcb.dir
       size: 1012181
       nfiles: 3
     - path: data/siip_lookahead_metadata.json
-      md5: 2188f40b9b4b08430062c4a131616246
+      md5: 284c01d38ab39cb45a8f1c5b16dba0ff
       size: 822
   Create powerSystems system with lookahead:
     cmd: julia --project create_lookahead_sys.jl
@@ -122,17 +122,17 @@ stages:
       size: 1012181
       nfiles: 3
     - path: data/siip_lookahead_metadata.json
-      md5: 2188f40b9b4b08430062c4a131616246
+      md5: 284c01d38ab39cb45a8f1c5b16dba0ff
       size: 822
     outs:
     - path: lookahead_system/plant1_max_active_power.png
       md5: 51bf07db9996b210e285eb28f6c3a3b3
       size: 12334
     - path: lookahead_system/sys.json
-      md5: 603cc5ccb6ff6e94fedb9e5a5d89ae0d
+      md5: 0469afbd33d8396cc782912835ba14cf
       size: 11910
     - path: lookahead_system/sys_time_series_storage.h5
-      md5: c778fc006d2e8a30921e021dd05fc269
+      md5: 5f2294b794cdc13094ac6752524be130
       size: 352159
     - path: lookahead_system/sys_validation_descriptors.json
       md5: 407a17331fd34d53f3e08469dfdede42
