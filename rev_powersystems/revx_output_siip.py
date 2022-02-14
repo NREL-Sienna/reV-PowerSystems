@@ -49,7 +49,7 @@ def max_fiber_size(
     return max_size
 
 
-def match_points(source_metadata, target_metadata, max_size=np.inf):
+def match_points(source_metadata, target_metadata, max_size=5):
     """Match source to target
     For each source_point, we find the index of the nearest target point.
 
@@ -59,7 +59,7 @@ def match_points(source_metadata, target_metadata, max_size=np.inf):
         Array containing lattitude and longitude
     target_metadata : pd.DataFrame
         Array containing lattitude and longitude
-    max_size: float = inf
+    max_size: float = 5
         Maximum size of each "fiber"
 
     Returns
@@ -124,30 +124,6 @@ class SIIPTimeSeriesMetadata:
         self.siip_metadata[column] = value
         return self
 
-    def remap(new_data, match_function=match_points, **kwargs):
-        """Use subset of time series metadata using new_data and match_function
-
-        Parameters
-        ----------
-        new_data : pd.DataFrame
-        match_function : function = match_points
-            Takes new data and existing data and creates an array pointing to existing data
-        **kwargs
-            kwargs are passed to match_function
-
-        Returns
-        -------
-        Metadata with component frames from the index of new_data
-        and values given by the map_function
-        """
-        indices = match_function(new_data, self.siip_metadata, **kwargs)
-        return remap_indices(indices, new_data.index)
-
-    def remap_indices(indices, names):
-        self.siip_metadata = self.siip_metadata.iloc[indices, :]
-        self.siip_metadata.index = names
-        return self
-
     @classmethod
     def from_csv(cls, filename, id_column: str = "component_name"):
         metadata = pd.read_csv(filename).set_index(id_column)
@@ -187,8 +163,8 @@ class SIIPTimeSeriesMetadata:
 
     def add_rev_lookaheads(
             self,
-        lookaheads: List[str],
-        time_series_csv: str,
+            lookaheads: List[str],
+            time_series_csv: str,
     ):
         """Set forecast by unwrapping each lookahead
         into "looking ahead" by `resolution` each time.
@@ -199,8 +175,6 @@ class SIIPTimeSeriesMetadata:
             List of paths to lookahead files
         time_series_csv : str
             String containing one {} for lookahead index formatting
-        resolution : datetime.timdelta = 1 hour
-            How far ahead each lookahead looks
         """
         if len(lookaheads) == 0:
             return
@@ -226,27 +200,24 @@ class SIIPTimeSeriesMetadata:
         self.add("type", "Deterministic")
         return self
 
-    def add_rev_timeseries(
+    def add_all_timeseries(
             self,
-            outputs: Outputs,
+            array,
+            times,
             timeseries_csv_filename: str,
-            name: str = "plant_profiles"
     ):
         """Save time series to csv with columns of initial ids.
 
         Parameters
         ----------
-        outputs : reVX.handlers.output.Outputs
-            Output from reVX plant builder
+        array : array_like of size (m, n)
+        times : table of time-index
         timeseries_csv_filename : str
             Filename to save output time series to
-        name: str = "plant_profiles"
-            Dataset in output to read profiles from. May be "gen_profiles".
         """
-        values = outputs[name,:,:]
         df = pd.DataFrame(
-            values,
-            index=outputs["time_index"],
+            array,
+            index=times,
             columns=self.siip_metadata.index
         )
         self.set("data_file", timeseries_csv_filename)
