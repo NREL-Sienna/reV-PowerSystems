@@ -1,4 +1,4 @@
-name: ExamplePipeline
+name: DVCRunPipeline
 
 on: [push]
 jobs:
