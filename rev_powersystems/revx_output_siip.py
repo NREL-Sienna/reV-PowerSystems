@@ -279,4 +279,4 @@ class SIIPTimeSeriesMetadata:
 
 def concat(metadatas: List[SIIPTimeSeriesMetadata], **kwargs):
     "Concatenate SIIPTimeSeriesMetadata. Useful for adding multiple resolutions"
-    return SIIPTimeSeriesMetadata(pd.concat(metadatas, **kwargs))
+    return SIIPTimeSeriesMetadata(pd.concat(map(lambda x: x.siip_metadata, metadatas), **kwargs))
