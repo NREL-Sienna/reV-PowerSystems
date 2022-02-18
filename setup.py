@@ -21,7 +21,7 @@ setup(
     install_requires=[
         'scipy>=1.7.1',
         'numpy>=1.21.1',
-        'nrel-revx>=0.3.39'
+        'NREL-reVX>=0.3.39'
     ],
     include_package_data=True,
     classifiers=[

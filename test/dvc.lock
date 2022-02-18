@@ -26,8 +26,8 @@ stages:
     cmd: python test_no_lookahead.py
     deps:
     - path: ../rev_powersystems/revx_output_siip.py
-      md5: 804bd3d3b63a3641357b4ee25a506176
-      size: 9314
+      md5: fa1fa1dcd64b1a04b261e74f03cb13b1
+      size: 9409
     - path: data/siip_example_simple_plant_builder.h5
       md5: 76752691438562dc9ab0b76c46d0ed3d
       size: 344612
@@ -92,8 +92,8 @@ stages:
     cmd: python test_lookahead.py
     deps:
     - path: ../rev_powersystems/revx_output_siip.py
-      md5: 804bd3d3b63a3641357b4ee25a506176
-      size: 9314
+      md5: fa1fa1dcd64b1a04b261e74f03cb13b1
+      size: 9409
     - path: data/siip_example_simple_plant_builder.h5
       md5: 76752691438562dc9ab0b76c46d0ed3d
       size: 344612
