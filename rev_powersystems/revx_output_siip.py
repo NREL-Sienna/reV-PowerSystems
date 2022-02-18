@@ -226,7 +226,7 @@ class SIIPTimeSeriesMetadata:
         return self
 
     REQUIRED_COLUMNS=["resolution","normalization_factor","category","simulation","name","data_file"]
-    OPTIONAL_COLUMNS=["module","type"]
+    OPTIONAL_COLUMNS=["module","type","scaling_factor_multiplier","scaling_factor_multiplier_module"]
     COLUMNS=REQUIRED_COLUMNS+OPTIONAL_COLUMNS
 
     def necessary_columns(self):
