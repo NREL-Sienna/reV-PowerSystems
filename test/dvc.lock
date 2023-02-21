@@ -67,8 +67,8 @@ stages:
     cmd: julia --project create_basic_sys.jl
     deps:
     - path: create_basic_sys.jl
-      md5: 20c76cbe9cbfe74ad64dc2fcf94a3c61
-      size: 589
+      md5: bbad8c9803dbd9939b06a2232f609f89
+      size: 615
     - path: data/siip_timeseries.csv
       md5: 4675c319a3f31d49bf9b549c32d81926
       size: 418501
@@ -77,17 +77,20 @@ stages:
       size: 558
     outs:
     - path: basic_system/plant1_max_active_power.png
-      md5: 2cdb694db7de553fc565266833af0f90
-      size: 43635
+      md5: 0359c9d397870d5231b429550f29a0ed
+      size: 42572
     - path: basic_system/sys.json
-      md5: 9051d7fdada137dcb49b1f3451227291
-      size: 11440
+      md5: 06797f1fb48abfede7544aa56d717873
+      size: 11743
+    - path: basic_system/sys_metadata.json
+      md5: fb985f27b8f95d3cdcb8e277c18d3663
+      size: 420
     - path: basic_system/sys_time_series_storage.h5
-      md5: ac91e8b4732f101b48e0c2a63983eda6
-      size: 191072
+      md5: e8c0397d15f17423aeaabbcc0a493b97
+      size: 187800
     - path: basic_system/sys_validation_descriptors.json
-      md5: 407a17331fd34d53f3e08469dfdede42
-      size: 225883
+      md5: 61ac2a5f70645ce0048ea0593b244491
+      size: 270549
   Convert lookahead reVX output to timeseries pointers json:
     cmd: python test_lookahead.py
     deps:
@@ -126,14 +129,17 @@ stages:
       size: 822
     outs:
     - path: lookahead_system/plant1_max_active_power.png
-      md5: 51bf07db9996b210e285eb28f6c3a3b3
-      size: 12334
+      md5: a11b4213e52411a8fca3b733125431c8
+      size: 12498
     - path: lookahead_system/sys.json
-      md5: fb1e074bb21624a21df4af52141d44ad
-      size: 11910
+      md5: c338f4eceebda0fdda3147b303683066
+      size: 12213
+    - path: lookahead_system/sys_metadata.json
+      md5: 9daf072db73cb0abb55f048c3b0cb2b2
+      size: 417
     - path: lookahead_system/sys_time_series_storage.h5
-      md5: 65826a7d14bad4f05816198b3c8abdd9
-      size: 352159
+      md5: 2083e35776fd8e87a31c1c597995f7e4
+      size: 344839
     - path: lookahead_system/sys_validation_descriptors.json
-      md5: 407a17331fd34d53f3e08469dfdede42
-      size: 225883
+      md5: 61ac2a5f70645ce0048ea0593b244491
+      size: 270549

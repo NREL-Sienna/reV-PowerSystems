@@ -1,6 +1,8 @@
 using PowerSystems
 using Plots
 
+const PSY = PowerSystems
+
 sys = System(0, enable_compression=true)
 add_component!(sys, Bus(nothing))
 for i in 1:3
@@ -13,7 +15,7 @@ end
 
 metadata_file = "data/siip_timeseries_metadata.json"
 add_time_series!(sys, metadata_file)
-to_json(sys, "basic_system/sys.json", force=true)
+to_json(sys, "basic_system/sys.json"; force=true)
 
 ta = get_time_series_array(
     SingleTimeSeries,

@@ -36,6 +36,7 @@ stages:
     - data/siip_timeseries_metadata.json
     outs:
     - basic_system/sys.json
+    - basic_system/sys_metadata.json
     - basic_system/sys_time_series_storage.h5
     - basic_system/sys_validation_descriptors.json
     - basic_system/plant1_max_active_power.png
@@ -47,6 +48,7 @@ stages:
     - data/siip_lookahead_metadata.json
     outs:
     - lookahead_system/sys.json
+    - lookahead_system/sys_metadata.json
     - lookahead_system/sys_validation_descriptors.json
     - lookahead_system/sys_time_series_storage.h5
     - lookahead_system/plant1_max_active_power.png
