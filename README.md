@@ -29,7 +29,7 @@ and `test/data/wtk_coe_2017_cem_v3_wind_conus_multiyear_colorado.csv` for the `r
 For our list of locations and components, we have `test/data/siip_meta.csv`.
 
 1. In `test/siip_simple_plant_builder.py`, we use the `simple_plant_builder` in `reVX` to
-generate `siip_example_simple_plant_builder.h5`.
+generate `siip_example_simple_plant_builder_utc.h5`. Note that there is a mismatch between `out_fpath` and the filepath.
 
 ### reVX to time series CSV and time series pointer JSON.
 
