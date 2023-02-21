@@ -13,27 +13,27 @@ stages:
       md5: 576de6bce7aa966fe4c70136ccb969a2
       size: 3704336
     - path: siip_simple_plant_builder.py
-      md5: 423cbecea204a3b03ba0f74c9bfb47e1
-      size: 979
+      md5: 7c3c59b16ffa6a7422c1b9df32e79a73
+      size: 1364
     outs:
-    - path: data/siip_example_simple_plant_builder.h5
-      md5: 76752691438562dc9ab0b76c46d0ed3d
+    - path: data/siip_example_simple_plant_builder_lookahead_utc.h5
+      md5: 859f44ac2148af65ae964df782d80fae
       size: 344612
-    - path: data/siip_example_simple_plant_builder_lookahead.h5
-      md5: 76752691438562dc9ab0b76c46d0ed3d
+    - path: data/siip_example_simple_plant_builder_utc.h5
+      md5: 859f44ac2148af65ae964df782d80fae
       size: 344612
   Convert reVX output to timeseries pointer json:
     cmd: python test_no_lookahead.py
     deps:
     - path: ../rev_powersystems/revx_output_siip.py
-      md5: fa1fa1dcd64b1a04b261e74f03cb13b1
-      size: 9409
-    - path: data/siip_example_simple_plant_builder.h5
-      md5: 76752691438562dc9ab0b76c46d0ed3d
+      md5: 59051d73c8ff8470755af93e43e14b43
+      size: 9403
+    - path: data/siip_example_simple_plant_builder_utc.h5
+      md5: 859f44ac2148af65ae964df782d80fae
       size: 344612
     - path: test_no_lookahead.py
-      md5: ad7df663d82ff0db6e6d917f2ce89029
-      size: 427
+      md5: 83bd9bcb49bc90b28c8250f7b0a358cd
+      size: 425
     outs:
     - path: data/siip_timeseries.csv
       md5: 4675c319a3f31d49bf9b549c32d81926
@@ -80,13 +80,13 @@ stages:
       md5: 0359c9d397870d5231b429550f29a0ed
       size: 42572
     - path: basic_system/sys.json
-      md5: 06797f1fb48abfede7544aa56d717873
+      md5: 45fd54cd4ba0feae9e5db261fa66bafe
       size: 11743
     - path: basic_system/sys_metadata.json
       md5: fb985f27b8f95d3cdcb8e277c18d3663
       size: 420
     - path: basic_system/sys_time_series_storage.h5
-      md5: e8c0397d15f17423aeaabbcc0a493b97
+      md5: 2b50cdbb207b53b580585f781f1a0cba
       size: 187800
     - path: basic_system/sys_validation_descriptors.json
       md5: 61ac2a5f70645ce0048ea0593b244491
@@ -95,17 +95,17 @@ stages:
     cmd: python test_lookahead.py
     deps:
     - path: ../rev_powersystems/revx_output_siip.py
-      md5: fa1fa1dcd64b1a04b261e74f03cb13b1
-      size: 9409
-    - path: data/siip_example_simple_plant_builder.h5
-      md5: 76752691438562dc9ab0b76c46d0ed3d
+      md5: 59051d73c8ff8470755af93e43e14b43
+      size: 9403
+    - path: data/siip_example_simple_plant_builder_lookahead_utc.h5
+      md5: 859f44ac2148af65ae964df782d80fae
       size: 344612
-    - path: data/siip_example_simple_plant_builder_lookahead.h5
-      md5: 76752691438562dc9ab0b76c46d0ed3d
+    - path: data/siip_example_simple_plant_builder_utc.h5
+      md5: 859f44ac2148af65ae964df782d80fae
       size: 344612
     - path: test_lookahead.py
-      md5: 18e502efed7b95470273d895de4ab4ae
-      size: 576
+      md5: 7246f1fa16cdab906b8770d3351239af
+      size: 584
     outs:
     - path: data/lookahead_timeseries/
       md5: 3a69c50a4b98578549835bb3a1cc7bcb.dir
@@ -132,13 +132,13 @@ stages:
       md5: a11b4213e52411a8fca3b733125431c8
       size: 12498
     - path: lookahead_system/sys.json
-      md5: c338f4eceebda0fdda3147b303683066
+      md5: 5f7ef61239306f4de99c6fcf8af18cbb
       size: 12213
     - path: lookahead_system/sys_metadata.json
       md5: 9daf072db73cb0abb55f048c3b0cb2b2
       size: 417
     - path: lookahead_system/sys_time_series_storage.h5
-      md5: 2083e35776fd8e87a31c1c597995f7e4
+      md5: f0fa632cb2a9e85ef2f91905e6628dc0
       size: 344839
     - path: lookahead_system/sys_validation_descriptors.json
       md5: 61ac2a5f70645ce0048ea0593b244491

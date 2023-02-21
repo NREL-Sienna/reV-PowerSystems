@@ -28,13 +28,14 @@ def read_sc(filepath):
     rev_sc["res_gids"] = rev_sc["res_gids"].apply(json.loads)
     return rev_sc
 
+# Sends things to _utc.h5 for some horrible reason.
 out_fpath = "data/siip_example_simple_plant_builder.h5"
 out_lookahead_fpath = "data/siip_example_simple_plant_builder_lookahead.h5"
 
 if __name__ == "__main__":
     print("Reading rev supply curve csv")
     rev_sc = read_sc(sc_fpath)
-    print(f"Writing {out_fpath}")
+    print(f"Writing data/siip_example_simple_plant_builder_utc.h5")
     SimplePlantBuilder.run(plant_meta, rev_sc, cf_fpath, out_fpath=out_fpath)
-    print(f"Writing {out_lookahead_fpath}")
+    print(f"Writing data/siip_example_simple_plant_builder_lookahead.h5")
     SimplePlantBuilder.run(plant_meta, rev_sc, cf_fpath, out_fpath=out_lookahead_fpath)

@@ -7,12 +7,12 @@ stages:
     - data/wtk_coe_2017_cem_v3_wind_conus_multiyear_colorado.csv
     - siip_simple_plant_builder.py
     outs:
-    - data/siip_example_simple_plant_builder.h5
-    - data/siip_example_simple_plant_builder_lookahead.h5
+    - data/siip_example_simple_plant_builder_utc.h5
+    - data/siip_example_simple_plant_builder_lookahead_utc.h5
   Convert reVX output to timeseries pointer json:
     cmd: python test_no_lookahead.py
     deps:
-    - data/siip_example_simple_plant_builder.h5
+    - data/siip_example_simple_plant_builder_utc.h5
     - ../rev_powersystems/revx_output_siip.py
     - test_no_lookahead.py
     outs:
@@ -21,8 +21,8 @@ stages:
   Convert lookahead reVX output to timeseries pointers json:
     cmd: python test_lookahead.py
     deps:
-    - data/siip_example_simple_plant_builder.h5
-    - data/siip_example_simple_plant_builder_lookahead.h5
+    - data/siip_example_simple_plant_builder_utc.h5
+    - data/siip_example_simple_plant_builder_lookahead_utc.h5
     - ../rev_powersystems/revx_output_siip.py
     - test_lookahead.py
     outs:
