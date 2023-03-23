@@ -189,7 +189,7 @@ class SIIPTimeSeriesMetadata:
             for count, lookahead_file in enumerate(lookaheads):
                 with Outputs(lookahead_file, "r") as output:
                     df = pd.DataFrame(
-                        {count: output["plant_profiles", :, index]},
+                        {count: output["profiles", :, index]},
                         index=output["time_index"],
                     )
                     timeseries = timeseries.join(df)

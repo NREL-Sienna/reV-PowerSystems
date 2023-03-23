@@ -7,12 +7,12 @@ stages:
     - data/wtk_coe_2017_cem_v3_wind_conus_multiyear_colorado.csv
     - siip_simple_plant_builder.py
     outs:
-    - data/siip_example_simple_plant_builder.h5
-    - data/siip_example_simple_plant_builder_lookahead.h5
+    - data/siip_example_simple_plant_builder_utc.h5
+    - data/siip_example_simple_plant_builder_lookahead_utc.h5
   Convert reVX output to timeseries pointer json:
     cmd: python test_no_lookahead.py
     deps:
-    - data/siip_example_simple_plant_builder.h5
+    - data/siip_example_simple_plant_builder_utc.h5
     - ../rev_powersystems/revx_output_siip.py
     - test_no_lookahead.py
     outs:
@@ -21,8 +21,8 @@ stages:
   Convert lookahead reVX output to timeseries pointers json:
     cmd: python test_lookahead.py
     deps:
-    - data/siip_example_simple_plant_builder.h5
-    - data/siip_example_simple_plant_builder_lookahead.h5
+    - data/siip_example_simple_plant_builder_utc.h5
+    - data/siip_example_simple_plant_builder_lookahead_utc.h5
     - ../rev_powersystems/revx_output_siip.py
     - test_lookahead.py
     outs:
@@ -36,6 +36,7 @@ stages:
     - data/siip_timeseries_metadata.json
     outs:
     - basic_system/sys.json
+    - basic_system/sys_metadata.json
     - basic_system/sys_time_series_storage.h5
     - basic_system/sys_validation_descriptors.json
     - basic_system/plant1_max_active_power.png
@@ -47,6 +48,7 @@ stages:
     - data/siip_lookahead_metadata.json
     outs:
     - lookahead_system/sys.json
+    - lookahead_system/sys_metadata.json
     - lookahead_system/sys_validation_descriptors.json
     - lookahead_system/sys_time_series_storage.h5
     - lookahead_system/plant1_max_active_power.png
